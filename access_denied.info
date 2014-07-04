@@ -1,0 +1,4 @@
+name = Access Denied
+description = My Access Denied Module
+package = My module
+core = 7.x

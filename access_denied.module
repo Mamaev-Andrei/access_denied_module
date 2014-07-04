@@ -1,0 +1,45 @@
+<?php
+/**
+*This module blocked pages if user select language, what's not exists 
+*/
+//Функция редактирования ноды
+function access_denied_form_node_form_alter(&$form, &$form_state) {
+//Дополнительные массивы для language_list      
+    $valang = array();
+    $value = array(); 
+    $lang = array();
+//Перенос доступных языков в переменную
+    $languages = language_list('enabled');    
+//извлечение необходимых полей в массив (язык, название языка)
+    foreach($languages as $key => $value) {
+      $valang[] = $value;
+      foreach($value as $k => $val) {
+        $lang[] = $val->name;
+//Вставляем данные в виде таблицы в базу данных        
+        $query = db_insert('tablang')
+  ->fields(array(
+          'name' => $val->name,
+          'lang' => $val->language,
+     ))
+  ->execute();
+      }
+    }
+//Создаем поля для редактировани ноды (выбора языка)
+  $form['addmenu'] = array (
+    '#description'    => t('In this field you may blocked content for user on this languages'),
+    '#type'           => 'fieldset',
+    '#title'          => 'Blocked node for this language',
+    '#group'          => 'additional_settings',
+    '#weight'         => -99,
+  );
+  $form['addmenu']['addlanguage'] = array (  
+      '#type'      => 'checkboxes',
+      '#title'    => t('For what language access denied?'),
+      '#options' => $lang,
+  );
+}
+ 
+
+
+
+
