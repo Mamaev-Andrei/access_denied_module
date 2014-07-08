@@ -33,6 +33,10 @@ function access_denied_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'checkbox' => array(
+      'description' => 'Checkbox field.',
+      'type' => 'int',
+      )
     ),
     'primary key' => array('id'),
   );
