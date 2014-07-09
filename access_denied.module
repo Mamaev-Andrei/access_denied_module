@@ -8,7 +8,7 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
   foreach($languages as $key => $value) {
     $valang[] = $value;
     foreach($value as $k => $val) {
-      $lang[$k] = $val -> name;
+      $lang[$k] = $val->name;
     }
   }
   $form['addmenu'] = array(
@@ -19,24 +19,25 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
     '#weight'         => -99,
   );
   $form['addmenu']['addlanguage'] = array(  
-    '#type'      => 'checkboxes',
+    '#type'     => 'checkboxes',
     '#title'    => t('For what language access denied?'),
-    '#options' => $lang,
+    '#options'  => $lang,
   );
   return $form;
 }
-function access_denied_node_submit($node, $form, &$form_state){
+function access_denied_node_submit($node, $form, &$form_state) {
+  $languages = language_list('enabled'); 
   $check = $form_state['values']['addlanguage'];
-  $box = array();
   foreach($check as $key => $value){
-    $box[] = $value;
-  }
-     dsm ($check);
-     dsm ($node -> nid);
     $query = db_insert('tablang')
     ->fields(array(
-    'lang' => $box,
-    'node' => $node -> nid,
+      'checkbox'=>$value,
+      'node'=>$node->nid,
+      'lang'=>$key,
     ))
     ->execute();
   }  
+}  
+function hook_node_delete($node) {
+  db_delete('tablang')->condition('node', $node->nid)->execute();
+}

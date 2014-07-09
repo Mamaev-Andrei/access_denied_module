@@ -21,10 +21,10 @@ function access_denied_schema() {
       ),
       'node'     => array(
         'description' => 'Name field.',
-        'type' => 'int',
-        'size' => 'tiny',
+        'type' => 'varchar',
+        'length' => 150,
         'not null' => TRUE,
-        'default' => 0,
+        'default' => '',
       ),
       'lang'     => array(
         'description' => 'Language field.',
@@ -35,10 +35,10 @@ function access_denied_schema() {
       ),
       'checkbox' => array(
       'description' => 'Checkbox field.',
-      'type' => 'int',
+      'type' => 'varchar',
+      'length' => 150,
       'not null' => TRUE,
-      'size' => 'tiny',
-      'default' => 0,
+      'default' => '',
       )
     ),
     'primary key' => array('id'),
