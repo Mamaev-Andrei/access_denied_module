@@ -3,60 +3,45 @@
 *This module blocked pages if user select language, what's not exists 
 */
 
-
-
 function access_denied_form_node_form_alter(&$form, & $form_state) {
-  $valang = array();
-  $value = array(); 
-  $lang = array();
-  $languages = language_list('enabled');    
+  $languages = language_list('enabled'); 
   foreach($languages as $key => $value) {
     $valang[] = $value;
     foreach($value as $k => $val) {
-      $lang[] = $val->name;    
-  }
+      $key[] = $k;
+      $lang[$k] = $val->name;
+      $query = db_insert('tablang')
+      ->fields(array(
+      'name' => $lang[$k],
+       ))
+      ->execute();  
     }
-    dsm ($lang);
-  $form['addmenu'] = array (
+  }
+  $form['addmenu'] = array(
     '#description'    => t('In this field you may blocked content for user on this languages'),
     '#type'           => 'fieldset',
     '#title'          => 'Blocked node for this language',
     '#group'          => 'additional_settings',
     '#weight'         => -99,
   );
-  $form['addmenu']['addlanguage'] = array (  
+  $form['addmenu']['addlanguage'] = array(  
     '#type'      => 'checkboxes',
     '#title'    => t('For what language access denied?'),
     '#options' => $lang,
+    '#default_value'=>0,
+    '#return_value'=>1,
   );
+  return $form;
 }
-
-function access_denied_node_submit($node, $form, &$form_state)  {
-  if ($node->type === 'article') :
-  if ($form_state['values']['addlanguage']):
+function access_denied_node_submit($node, $form, &$form_state){
+  $value = array();
+  $check = $form_state['values']['addlanguage'];
+  foreach ($check as $key => $value){  
+     dsm ($value);
     $query = db_insert('tablang')
     ->fields(array(
-      'checkbox' => ($form_state['values']['addlanguage']),
-      'name' => $lang,
+    'lang' => $value,
     ))
     ->execute();
-    drupal_set_message('Заблокированы Ноды для страницы <em class="placeholder">'. $node->title. '</em>.');
-  endif;
-  endif;
-  dsm ($form_state['values']['addlanguage']);
+  }
 }  
-
-
-  
-
-  
-    
-
-
-
-
- 
-
-
-
-
