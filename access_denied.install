@@ -19,12 +19,12 @@ function access_denied_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
-      'name'     => array(
+      'node'     => array(
         'description' => 'Name field.',
-        'type' => 'varchar',
-        'length' => 150,
+        'type' => 'int',
+        'size' => 'tiny',
         'not null' => TRUE,
-        'default' => '',
+        'default' => 0,
       ),
       'lang'     => array(
         'description' => 'Language field.',
