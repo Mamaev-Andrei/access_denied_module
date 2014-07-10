@@ -38,6 +38,20 @@ function access_denied_node_submit($node, $form, &$form_state) {
     ->execute();
   }  
 }  
-function hook_node_delete($node) {
+function access_denied_node_delete($node) {
   db_delete('tablang')->condition('node', $node->nid)->execute();
 }
+function access_denied_node_access($node, $op, $account) {
+ $query = db_select('tablang', 't')
+  ->fields('t', array('node', 'lang','checkbox'))
+  ->execute(); 
+  while ($value = $query ->fetchAssoc()){
+  $nid = $value['node'];
+  $lang = $value['lang'];
+  $checkbox = $value['checkbox'];
+  }
+   if ($node->nid == $nid){
+   if  ($checkbox > 0){  
+  return NODE_ACCESS_DENY;
+}}}
+
