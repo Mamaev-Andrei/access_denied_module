@@ -1,7 +1,4 @@
 <?php
-/**
-*This module blocked pages if user select language, what's not exists 
-*/
 
 function access_denied_form_node_form_alter(&$form, & $form_state) {
   $languages = language_list('enabled'); 
@@ -19,39 +16,55 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
     '#weight'         => -99,
   );
   $form['addmenu']['addlanguage'] = array(  
-    '#type'     => 'checkboxes',
-    '#title'    => t('For what language access denied?'),
-    '#options'  => $lang,
+    '#type' => 'checkboxes',
+    '#title' => t('For what language access denied?'),
+    '#options' => $lang,
   );
   return $form;
 }
 function access_denied_node_submit($node, $form, &$form_state) {
+  db_delete('tablang')
+  ->condition('node', array($node->nid), 'IN')
+  ->execute();
   $languages = language_list('enabled'); 
   $check = $form_state['values']['addlanguage'];
-  foreach($check as $key => $value){
-    $query = db_insert('tablang')
-    ->fields(array(
+  foreach($check as $key => $value) {
+    if ($value === 0) {
+      $value = 'false';
+    }  
+    else {
+      $value = 'true';
+    }
+    if ($value == 'true'){
+       $query = db_insert('tablang')
+      ->fields(array(
       'checkbox'=>$value,
       'node'=>$node->nid,
       'lang'=>$key,
-    ))
-    ->execute();
-  }  
+      )
+      )
+      ->execute();
+    }
+  }   
 }  
 function access_denied_node_delete($node) {
   db_delete('tablang')->condition('node', $node->nid)->execute();
 }
 function access_denied_node_access($node, $op, $account) {
- $query = db_select('tablang', 't')
+  $query = db_select('tablang', 't')
+  ->condition('node', array($node->nid), 'IN')
   ->fields('t', array('node', 'lang','checkbox'))
   ->execute(); 
-  while ($value = $query ->fetchAssoc()){
-  $nid = $value['node'];
-  $lang = $value['lang'];
-  $checkbox = $value['checkbox'];
+  while ($value = $query ->fetchAssoc()) {
+    $lang = $value['lang'];
+    $nid = $value['node'];
+    $checkbox = $value['checkbox'];
+    global $language;
+       dsm ($nid);
+    if ($node->nid == $nid) {
+      if ($language->language == $lang) {
+        return NODE_ACCESS_DENY; 
+      }
+    } 
   }
-   if ($node->nid == $nid){
-   if  ($checkbox > 0){  
-  return NODE_ACCESS_DENY;
-}}}
-
+}

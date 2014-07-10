@@ -13,20 +13,20 @@ function access_denied_schema() {
   $schema['tablang'] = array(
     'description' => 'Custom table from access_denied.',
     'fields'      => array(
-     'id' => array(
+      'id' => array(
         'description' => 'The primary identifier for a record.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
-      'node'     => array(
+      'node' => array(
         'description' => 'Name field.',
         'type' => 'varchar',
         'length' => 150,
         'not null' => TRUE,
         'default' => '',
       ),
-      'lang'     => array(
+      'lang' => array(
         'description' => 'Language field.',
         'type' => 'varchar',
         'length' => 150,
@@ -43,5 +43,5 @@ function access_denied_schema() {
     ),
     'primary key' => array('id'),
   );
-    return $schema;
+  return $schema;
 }
