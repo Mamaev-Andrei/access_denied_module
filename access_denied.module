@@ -29,16 +29,9 @@ function access_denied_node_submit($node, $form, & $form_state) {
   $languages = language_list('enabled'); 
   $check = $form_state['values']['addlanguage'];
   foreach($check as $key => $value) {
-    if ($value === 0) {
-      $value = 'false';
-    }  
-    else {
-      $value = 'true';
-    }
-    if ($value == 'true') {
+    if ($value !== 0) {
        $query = db_insert('tablang')
       ->fields(array(
-      'checkbox' => $value,
       'node' => $node->nid,
       'lang' => $key,
       )
@@ -53,12 +46,11 @@ function access_denied_node_delete($node) {
 function access_denied_node_access($node, $op, $account) {
   $query = db_select('tablang', 't')
   ->condition('node', array($node->nid), 'IN')
-  ->fields('t', array('node', 'lang','checkbox'))
+  ->fields('t', array('node', 'lang',))
   ->execute(); 
   while ($value = $query ->fetchAssoc()) {
     $lang = $value['lang'];
     $nid = $value['node'];
-    $checkbox = $value['checkbox'];
     global $language;
     if ($node->nid == $nid) {
       if ($language->language == $lang) {

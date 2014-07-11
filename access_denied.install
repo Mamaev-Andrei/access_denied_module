@@ -12,7 +12,7 @@
 function access_denied_schema() {
   $schema['tablang'] = array(
     'description' => 'Custom table from access_denied.',
-    'fields'      => array(
+    'fields' => array(
       'id' => array(
         'description' => 'The primary identifier for a record.',
         'type' => 'serial',
@@ -33,13 +33,6 @@ function access_denied_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'checkbox' => array(
-      'description' => 'Checkbox field.',
-      'type' => 'varchar',
-      'length' => 150,
-      'not null' => TRUE,
-      'default' => '',
-      )
     ),
     'primary key' => array('id'),
   );
