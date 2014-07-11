@@ -9,11 +9,11 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
     }
   }
   $form['addmenu'] = array(
-    '#description'    => t('In this field you may blocked content for user on this languages'),
-    '#type'           => 'fieldset',
-    '#title'          => 'Blocked node for this language',
-    '#group'          => 'additional_settings',
-    '#weight'         => -99,
+    '#description' => t('In this field you may blocked content for user on this languages'),
+    '#type' => 'fieldset',
+    '#title' => 'Blocked node for this language',
+    '#group' => 'additional_settings',
+    '#weight' => -99,
   );
   $form['addmenu']['addlanguage'] = array(  
     '#type' => 'checkboxes',
@@ -22,7 +22,7 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
   );
   return $form;
 }
-function access_denied_node_submit($node, $form, &$form_state) {
+function access_denied_node_submit($node, $form, & $form_state) {
   db_delete('tablang')
   ->condition('node', array($node->nid), 'IN')
   ->execute();
@@ -35,12 +35,12 @@ function access_denied_node_submit($node, $form, &$form_state) {
     else {
       $value = 'true';
     }
-    if ($value == 'true'){
+    if ($value == 'true') {
        $query = db_insert('tablang')
       ->fields(array(
-      'checkbox'=>$value,
-      'node'=>$node->nid,
-      'lang'=>$key,
+      'checkbox' => $value,
+      'node' => $node->nid,
+      'lang' => $key,
       )
       )
       ->execute();
@@ -60,7 +60,6 @@ function access_denied_node_access($node, $op, $account) {
     $nid = $value['node'];
     $checkbox = $value['checkbox'];
     global $language;
-       dsm ($nid);
     if ($node->nid == $nid) {
       if ($language->language == $lang) {
         return NODE_ACCESS_DENY; 
