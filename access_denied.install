@@ -20,14 +20,21 @@ function access_denied_schema() {
         'not null' => TRUE,
       ),
       'node' => array(
-        'description' => 'Name field.',
+        'description' => 'Node Field.',
         'type' => 'varchar',
         'length' => 150,
         'not null' => TRUE,
         'default' => '',
       ),
       'lang' => array(
-        'description' => 'Language field.',
+        'description' => 'Language Field.',
+        'type' => 'varchar',
+        'length' => 150,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'page' => array(
+        'description' => 'Page Title.',
         'type' => 'varchar',
         'length' => 150,
         'not null' => TRUE,

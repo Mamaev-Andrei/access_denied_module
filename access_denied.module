@@ -24,30 +24,31 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
 }
 function access_denied_node_submit($node, $form, & $form_state) {
   db_delete('tablang')
-  ->condition('node', array($node->nid), 'IN')
-  ->execute();
+    ->condition('node', array($node->nid), 'IN')
+    ->execute();
   $languages = language_list('enabled'); 
   $check = $form_state['values']['addlanguage'];
   foreach($check as $key => $value) {
-    if ($value !== 0) {
-       $query = db_insert('tablang')
-      ->fields(array(
-      'node' => $node->nid,
-      'lang' => $key,
-      )
-      )
-      ->execute();
+  if ($value !== 0) {
+      $fields = array(
+        'node' => $node->nid,
+        'page' => $node->title,
+        'lang' => $key,
+      );
+      $query = db_insert('tablang')
+        ->fields($fields)
+        ->execute();
     }
-  }   
+  }
 }  
 function access_denied_node_delete($node) {
   db_delete('tablang')->condition('node', $node->nid)->execute();
 }
 function access_denied_node_access($node, $op, $account) {
   $query = db_select('tablang', 't')
-  ->condition('node', array($node->nid), 'IN')
-  ->fields('t', array('node', 'lang',))
-  ->execute(); 
+    ->condition('node', array($node->nid), 'IN')
+    ->fields('t', array('node', 'lang'))
+    ->execute(); 
   while ($value = $query ->fetchAssoc()) {
     $lang = $value['lang'];
     $nid = $value['node'];
@@ -58,4 +59,28 @@ function access_denied_node_access($node, $op, $account) {
       }
     } 
   }
+}
+function access_denied_menu() {
+  $items['access denied'] = array(
+    'title' => 'Tab Lang',
+    'page callback' => 'access_denied_tablang',
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+function access_denied_tablang() {
+  $header = array('Node', 'Languages is blocked', 'Page Title');
+  $rows = array();
+  $query = db_select('tablang', 't')
+    ->fields('t', array('node', 'lang', 'page'))
+    ->execute();
+  while ($value = $query->fetchAssoc()) {
+  dsm ($value);
+    $rows[] = array(
+      $value['node'],       
+      $value['lang'],
+      $url = l($value['page'], 'node' . '/' . $value['node']),
+    );
+  } 
+  return theme('table', array('header' => $header, 'rows' => $rows));
 }
