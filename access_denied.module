@@ -2,10 +2,10 @@
 
 function access_denied_form_node_form_alter(&$form, & $form_state) {
   $languages = language_list('enabled'); 
-  foreach($languages as $key => $value) {
-    $valang[] = $value;
-    foreach($value as $k => $val) {
-      $lang[$k] = $val->name;
+  foreach($languages as $name => $title) {
+    $languagevalue[] = $title;
+    foreach($title as $key => $value) {
+      $language[$key] = $value->name;
     }
   }
   $form['addmenu'] = array(
@@ -18,43 +18,43 @@ function access_denied_form_node_form_alter(&$form, & $form_state) {
   $form['addmenu']['addlanguage'] = array(  
     '#type' => 'checkboxes',
     '#title' => t('For what language access denied?'),
-    '#options' => $lang,
+    '#options' => $language,
   );
   return $form;
 }
 function access_denied_node_submit($node, $form, & $form_state) {
-  db_delete('tablang')
+  db_delete('languagetable')
     ->condition('node', array($node->nid), 'IN')
     ->execute();
   $languages = language_list('enabled'); 
-  $check = $form_state['values']['addlanguage'];
-  foreach($check as $key => $value) {
-  if ($value !== 0) {
+  $checkbox = $form_state['values']['addlanguage'];
+  foreach($checkbox as $key => $value) {
+    if ($value !== 0) {
       $fields = array(
         'node' => $node->nid,
         'page' => $node->title,
-        'lang' => $key,
+        'language' => $key,
       );
-      $query = db_insert('tablang')
+      $query = db_insert('languagetable')
         ->fields($fields)
         ->execute();
     }
   }
 }  
 function access_denied_node_delete($node) {
-  db_delete('tablang')->condition('node', $node->nid)->execute();
+  db_delete('languagetable')->condition('node', $node->nid)->execute();
 }
 function access_denied_node_access($node, $op, $account) {
-  $query = db_select('tablang', 't')
+  $query = db_select('languagetable', 't')
     ->condition('node', array($node->nid), 'IN')
-    ->fields('t', array('node', 'lang'))
+    ->fields('t', array('node', 'language'))
     ->execute(); 
   while ($value = $query ->fetchAssoc()) {
-    $lang = $value['lang'];
+    $speech = $value['language'];
     $nid = $value['node'];
     global $language;
     if ($node->nid == $nid) {
-      if ($language->language == $lang) {
+      if ($language->language == $speech) {
         return NODE_ACCESS_DENY; 
       }
     } 
@@ -62,25 +62,38 @@ function access_denied_node_access($node, $op, $account) {
 }
 function access_denied_menu() {
   $items['access denied'] = array(
-    'title' => 'Tab Lang',
+    'title' => 'Language Table',
     'page callback' => 'access_denied_tablang',
     'access arguments' => array('administer site configuration'),
   );
   return $items;
 }
 function access_denied_tablang() {
-  $header = array('Node', 'Languages is blocked', 'Page Title');
+  $header = array('Node', 'This languages are blocked', 'Page Title');
   $rows = array();
-  $query = db_select('tablang', 't')
-    ->fields('t', array('node', 'lang', 'page'))
+  $query = db_select('languagetable', 't')
+    ->fields('t', array('node', 'language', 'page'))
     ->execute();
+    $array = array();
   while ($value = $query->fetchAssoc()) {
-  dsm ($value);
+    if (isset($array[$value['node']])) {
+      array_push ($array[$value['node']]['language'], $value['language']);
+    }
+    else {
+      $array[$value['node']] = array(
+        'page' => $value['page'],
+        'language' => array(
+          $value['language'],
+        ),
+      );
+    }
+  }
+  foreach ($array as $key => $value) {
     $rows[] = array(
-      $value['node'],       
-      $value['lang'],
-      $url = l($value['page'], 'node' . '/' . $value['node']),
+      $key,       
+      $stringlanguage = implode(", ",$value['language']),
+      $url = l($value['page'], 'node' . '/' . $key),
     );
-  } 
+  }
   return theme('table', array('header' => $header, 'rows' => $rows));
 }

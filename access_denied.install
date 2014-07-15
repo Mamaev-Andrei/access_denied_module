@@ -10,7 +10,7 @@
  */
 
 function access_denied_schema() {
-  $schema['tablang'] = array(
+  $schema['languagetable'] = array(
     'description' => 'Custom table from access_denied.',
     'fields' => array(
       'id' => array(
@@ -26,7 +26,7 @@ function access_denied_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'lang' => array(
+      'language' => array(
         'description' => 'Language Field.',
         'type' => 'varchar',
         'length' => 150,
